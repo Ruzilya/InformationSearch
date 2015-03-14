@@ -39,7 +39,7 @@ public class PostingsFile {
     }
 
     public static  void main(String args[]) throws IOException, ParseException {
-        PostingsFile pf = new PostingsFile("src\\main\\resources\\output", "src\\main\\resources\\indexDirectory");
+        PostingsFile pf = new PostingsFile("data\\postingFile", "data\\indexDirectory");
         pf.create();
     }
 }

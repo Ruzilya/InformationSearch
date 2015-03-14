@@ -34,8 +34,8 @@ public class LuceneIndexManager {
     }
 
     public LuceneIndexManager(){
-        docsDirPath="src\\main\\resources\\filesToIndex";
-        indexDirPath="src\\main\\resources\\indexDirectory";
+        docsDirPath="data\\filesToIndex";
+        indexDirPath="data\\indexDirectory";
     }
 
     public static final String FIELD_CONTENTS = "contents";
