@@ -96,9 +96,14 @@ public class LuceneIndexManager {
         TopDocs topdocs = getSearcher().search(query, count);
         for ( ScoreDoc scoreDoc : topdocs.scoreDocs ) {
 //            Document doc = searcher.doc(scoreDoc.doc);
-            ids.add(scoreDoc.doc);
+            ids.add(getDocId(scoreDoc.doc));
         }
         return ids;
+    }
+
+    //Because of general encoding ignores 0
+    private int getDocId(int t){
+        return t+1;
     }
 
     private void indexDocs(IndexWriter writer,File file) throws IOException {
