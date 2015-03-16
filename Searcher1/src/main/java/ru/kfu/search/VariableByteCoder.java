@@ -15,33 +15,33 @@ public class VariableByteCoder {
             return new byte[]{0};
         }
         int i = (int) (log(n) / log(128)) + 1;
-        byte[] rv = new byte[i];
+        byte[] bytes = new byte[i];
         int j = i - 1;
         do {
-            rv[j--] = (byte) (n % 128);
+            bytes[j--] = (byte) (n % 128);
             n /= 128;
         } while (j >= 0);
-        rv[i - 1] += 128;
-        return rv;
+        bytes[i - 1] += 128;
+        return bytes;
     }
 
-    public static byte[] encode(List<Integer> numbers) {
-        ByteBuffer buf = ByteBuffer.allocate(numbers.size() * (Integer.SIZE / Byte.SIZE));
+    public static byte[] vbEncode(List<Integer> numbers) {
+        ByteBuffer buf = ByteBuffer.allocate(numbers.size() * 4);
         for (Integer number : numbers) {
             buf.put(encodeNumber(number));
         }
         buf.flip();
-        byte[] rv = new byte[buf.limit()];
-        buf.get(rv);
-        return rv;
+        byte[] bytes = new byte[buf.limit()];
+        buf.get(bytes);
+        return bytes;
     }
 
-    public static List<Integer> decode(byte[] byteStream) {
+    public static List<Integer> vbDecode(byte[] byteStream) {
         List<Integer> numbers = new ArrayList<Integer>();
         int n = 0;
         for (byte b : byteStream) {
             if ((b & 0xff) < 128) {
-                n = 128 * n + b;
+                n = 128 * n + b & 0xff;
             } else {
                 int num = (128 * n + ((b - 128) & 0xff));
                 numbers.add(num);

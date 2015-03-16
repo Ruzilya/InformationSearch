@@ -21,7 +21,9 @@ public class PostingsFile {
     }
 
     public File create() throws IOException, ParseException {
-        File postingFile = new File(postingsFileDir+File.separator+"postingsFile.properties");
+        File dir = new File(postingsFileDir);
+        dir.mkdirs();
+        File postingFile = new File(postingsFileDir+File.separator+"postingsFile");
         postingFile.createNewFile();
         BufferedWriter bw = new BufferedWriter(new FileWriter(postingFile));
 
@@ -42,23 +44,12 @@ public class PostingsFile {
         return postingFile;
     }
 
-    private String getString(List<Integer> numbers){
+    public static String getString(List<Integer> numbers){
         StringBuffer sb = new StringBuffer();
         for(Integer num : numbers){
             sb.append(num+" ");
         }
         return sb.toString();
-    }
-
-    public Properties loadValues(String postingFilePath) throws IOException {
-        Properties prop = new Properties();
-        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(postingFilePath);
-        if (inputStream != null) {
-            prop.load(inputStream);
-        } else {
-            throw new FileNotFoundException("Property file '" + postingFilePath + "' not found in the classpath");
-        }
-        return prop;
     }
 
 }

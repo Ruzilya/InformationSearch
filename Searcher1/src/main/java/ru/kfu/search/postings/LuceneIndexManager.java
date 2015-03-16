@@ -34,8 +34,6 @@ public class LuceneIndexManager {
     }
 
     public LuceneIndexManager(){
-        docsDirPath="data\\filesToIndex";
-        indexDirPath="data\\indexDirectory";
     }
 
     public static final String FIELD_CONTENTS = "contents";
@@ -95,7 +93,6 @@ public class LuceneIndexManager {
         int count = getReader().getDocCount(FIELD_CONTENTS);
         TopDocs topdocs = getSearcher().search(query, count);
         for ( ScoreDoc scoreDoc : topdocs.scoreDocs ) {
-//            Document doc = searcher.doc(scoreDoc.doc);
             ids.add(getDocId(scoreDoc.doc));
         }
         return ids;
@@ -128,4 +125,19 @@ public class LuceneIndexManager {
         }
     }
 
+    public static String getDocsDirPath() {
+        return docsDirPath;
+    }
+
+    public static void setDocsDirPath(String docsDirPath) {
+        LuceneIndexManager.docsDirPath = docsDirPath;
+    }
+
+    public static String getIndexDirPath() {
+        return indexDirPath;
+    }
+
+    public static void setIndexDirPath(String indexDirPath) {
+        LuceneIndexManager.indexDirPath = indexDirPath;
+    }
 }

@@ -1,16 +1,11 @@
 package ru.kfu.search;
 
-import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 import org.apache.lucene.queryParser.ParseException;
 import ru.kfu.search.postings.BytePostingsFile;
+import ru.kfu.search.postings.LuceneIndexManager;
 import ru.kfu.search.postings.PostingsFile;
-import ru.kfu.search.util.NumberConverter;
 
 import java.io.*;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
 
 /**
  * Created by RuzilyaS on 14-Mar-15.
@@ -18,54 +13,41 @@ import java.util.Set;
 public class Main {
 
     public static  void main(String args[]) throws IOException, ParseException {
+        if(args.length<1){
+            System.out.println("You should write path to directory with files to index. Try again.");
+            System.exit(0);
+        }
+
+        String dir = "data";
+        String filesToIndexDir = args[0];
+        String indexDirectory = dir + File.separator + "indexes";
+        System.out.println("IndexDirectory = "+indexDirectory);
+
+        LuceneIndexManager.setDocsDirPath(filesToIndexDir);
+        LuceneIndexManager.setIndexDirPath(indexDirectory);
+
         //Create posting file
-        PostingsFile pf = new PostingsFile("src\\main\\resources");
+        PostingsFile pf = new PostingsFile(dir);
         File postingFile = pf.create();
+        System.out.println("postingFile = "+postingFile.getAbsolutePath());
 
         //Algorithm
-        Properties prop = pf.loadValues(postingFile.getName());
+        BytePostingsFile bpf = new BytePostingsFile(dir+File.separator+"bytePostingFile");
+        File bytePostingFile = bpf.create(postingFile);
+        System.out.println("bytePostingFile = "+bytePostingFile.getAbsolutePath());
 
-        BytePostingsFile bpf = new BytePostingsFile();
-        File bytePostingFile = bpf.create(prop);
-        System.out.println(bytePostingFile);
-        bpf.getNumbers(bytePostingFile);
+        //Create file with decoded data
+        bpf.getNumbersIntoFile(bytePostingFile, dir+File.separator+"decodedData");
 
-//        NumberConverter converter = new NumberConverter();
-//        Set<Object> keys = prop.keySet();
-//        for(Object k:keys){
-//            String key = (String)k;
-//            String numbersStr = prop.getProperty(key);
-//            List<Integer> numbers = converter.convertStringToInt(numbersStr);
-//            byte[] bytes = VariableByteCoder.encode(numbers);
-//
-//            ////
-//            String filename = "data\\postingFile\\byteFile.txt";
-//            BufferedWriter bw = new BufferedWriter(new FileWriter(new File(filename)));
-//
-//            System.out.println("original:" + numbers);
-////            String decoded = new String(bytes, "ISO-8859-1");
-////            System.out.println("decoded:" + decoded);
-////            bw.write(key + "=" + decoded);
-////            bw.newLine();
-//
-//            String stringToStore = new String(Base64.encode(bytes));
-//            System.out.println("stringToStore:" + stringToStore);
-//            byte[] restoredBytes = Base64.decode(stringToStore);
-//            System.out.println("decoded:" + VariableByteCoder.decode(restoredBytes));
+        long pFileSizeInBytes = postingFile.length();
+        long pFileSizeInMB = (pFileSizeInBytes / 1024) ;
 
+        long bFileSizeInBytes = bytePostingFile.length();
+        long bFileSizeInMB = (bFileSizeInBytes / 1024) ;
 
-//            byte[] encoded = decoded.getBytes("ISO-8859-1");
-//            System.out.println("encoded:" + java.util.Arrays.toString(encoded));
-//
-//            List<Integer> decryptedText = VariableByteCoder.decode(encoded);
-//            System.out.println("decryptedText = "+decryptedText);
-//            System.out.println();
-//            BufferedOutputStream  bos = new BufferedOutputStream (new FileOutputStream(new File(filename)));
-//            bos.write(("/n"+key+"=").getBytes());
-//            bos.write(bytes);
-            ////
+        System.out.println(String.format("Posting file[%s] size is %s KB",postingFile.getAbsolutePath(), pFileSizeInMB));
+        System.out.println(String.format("Posting file[%s] size after decoding is %s KB",bytePostingFile.getAbsolutePath(), bFileSizeInMB));
 
-//        }
     }
 
 }
