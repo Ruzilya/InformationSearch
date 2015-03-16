@@ -21,7 +21,6 @@ public class Main {
         String dir = "data";
         String filesToIndexDir = args[0];
         String indexDirectory = dir + File.separator + "indexes";
-        System.out.println("IndexDirectory = "+indexDirectory);
 
         LuceneIndexManager.setDocsDirPath(filesToIndexDir);
         LuceneIndexManager.setIndexDirPath(indexDirectory);
@@ -29,12 +28,10 @@ public class Main {
         //Create posting file
         PostingsFile pf = new PostingsFile(dir);
         File postingFile = pf.create();
-        System.out.println("postingFile = "+postingFile.getAbsolutePath());
 
         //Algorithm
         BytePostingsFile bpf = new BytePostingsFile(dir+File.separator+"bytePostingFile");
         File bytePostingFile = bpf.create(postingFile);
-        System.out.println("bytePostingFile = "+bytePostingFile.getAbsolutePath());
 
         //Create file with decoded data
         bpf.getNumbersIntoFile(bytePostingFile, dir+File.separator+"decodedData");
@@ -45,8 +42,8 @@ public class Main {
         long bFileSizeInBytes = bytePostingFile.length();
         long bFileSizeInMB = (bFileSizeInBytes / 1024) ;
 
-        System.out.println(String.format("Posting file[%s] size is %s KB",postingFile.getAbsolutePath(), pFileSizeInMB));
-        System.out.println(String.format("Posting file[%s] size after decoding is %s KB",bytePostingFile.getAbsolutePath(), bFileSizeInMB));
+        System.out.println(String.format("Size of posting file[%s] is %s KB",postingFile.getAbsolutePath(), pFileSizeInMB));
+        System.out.println(String.format("Size of posting file[%s] after decoding is %s KB",bytePostingFile.getAbsolutePath(), bFileSizeInMB));
 
     }
 
