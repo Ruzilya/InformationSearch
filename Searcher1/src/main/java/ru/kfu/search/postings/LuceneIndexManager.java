@@ -89,9 +89,13 @@ public class LuceneIndexManager {
     public List<Integer> getDocIds(String term)throws IOException{
         TermQuery query = new TermQuery(new Term(FIELD_CONTENTS, term));
         List<Integer> ids = new LinkedList<>();
-
         int count = getReader().getDocCount(FIELD_CONTENTS);
-        TopDocs topdocs = getSearcher().search(query, count);
+
+        SortField field = new SortField("docNum",
+                SortField.Type.LONG, false);
+        Sort sort = new Sort(field);
+
+        TopDocs topdocs = getSearcher().search(query, count, sort);
         for ( ScoreDoc scoreDoc : topdocs.scoreDocs ) {
             ids.add(getDocId(scoreDoc.doc));
         }
@@ -100,7 +104,8 @@ public class LuceneIndexManager {
 
     //Because of general encoding ignores 0
     private int getDocId(int t){
-        return t+1;
+//        return t+1;
+        return t;
     }
 
     private void indexDocs(IndexWriter writer,File file) throws IOException {
