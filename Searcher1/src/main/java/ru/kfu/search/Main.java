@@ -12,8 +12,10 @@ import java.io.*;
  */
 public class Main {
 
-    public static  void main(String args[]) throws IOException, ParseException {
-        if(args.length<1){
+    public static void main(String args[]) throws IOException, ParseException {
+
+        //Get test collection dir
+        if (args.length < 1) {
             System.out.println("You should write path to directory with files to index. Try again.");
             System.exit(0);
         }
@@ -27,23 +29,25 @@ public class Main {
 
         //Create posting file
         PostingsFile pf = new PostingsFile(dir);
-        File postingFile = pf.create();
+        File postingFile = pf.create(false, "postingFile");
+
+        File shotPostingFile = pf.create(true, "postingFileShot");
 
         //Algorithm
-        BytePostingsFile bpf = new BytePostingsFile(dir+File.separator+"bytePostingFile");
+        BytePostingsFile bpf = new BytePostingsFile(dir + File.separator + "bytePostingFile");
         File bytePostingFile = bpf.create(postingFile);
 
+        //Shot
+        BytePostingsFile bpfShot = new BytePostingsFile(dir + File.separator + "bytePostingFileShot");
+        File bytePostingFileShot = bpfShot.create(shotPostingFile);
+
         //Create file with decoded data
-        bpf.getNumbersIntoFile(bytePostingFile, dir+File.separator+"decodedData");
+        bpf.getNumbersIntoFile(bytePostingFile, dir + File.separator + "decodedData");
 
-        long pFileSizeInBytes = postingFile.length();
-        long pFileSizeInMB = (pFileSizeInBytes / 1024) ;
+        //Shot
+        bpfShot.getNumbersIntoFile(bytePostingFileShot, dir + File.separator + "decodedDataShot");
 
-        long bFileSizeInBytes = bytePostingFile.length();
-        long bFileSizeInMB = (bFileSizeInBytes / 1024) ;
-
-        System.out.println(String.format("Size of posting file[%s] is %s KB",postingFile.getAbsolutePath(), pFileSizeInMB));
-        System.out.println(String.format("Size of posting file[%s] after decoding is %s KB",bytePostingFile.getAbsolutePath(), bFileSizeInMB));
+        System.out.println("All files in " + pf.getDir().getAbsolutePath());
 
     }
 

@@ -102,10 +102,9 @@ public class LuceneIndexManager {
         return ids;
     }
 
-    //Because of general encoding ignores 0
+    //Because of encoding ignores 0
     private int getDocId(int t){
-//        return t+1;
-        return t;
+        return t+1;
     }
 
     private void indexDocs(IndexWriter writer,File file) throws IOException {

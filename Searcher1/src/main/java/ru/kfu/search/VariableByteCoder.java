@@ -10,7 +10,7 @@ import static java.lang.Math.log;
  */
 public class VariableByteCoder {
 
-    private static byte[] encodeNumber(int n) {
+    public static byte[] vbEncodeNumber(int n) {
         if (n == 0) {
             return new byte[]{0};
         }
@@ -28,7 +28,7 @@ public class VariableByteCoder {
     public static byte[] vbEncode(List<Integer> numbers) {
         ByteBuffer buf = ByteBuffer.allocate(numbers.size() * 4);
         for (Integer number : numbers) {
-            buf.put(encodeNumber(number));
+            buf.put(vbEncodeNumber(number));
         }
         buf.flip();
         byte[] bytes = new byte[buf.limit()];
@@ -43,7 +43,7 @@ public class VariableByteCoder {
             if ((b & 0xff) < 128) {
                 n = 128 * n + b & 0xff;
             } else {
-                int num = (128 * n + ((b - 128) & 0xff));
+                int num = (128 * n + (((b & 0xff) - 128)));
                 numbers.add(num);
                 n = 0;
             }

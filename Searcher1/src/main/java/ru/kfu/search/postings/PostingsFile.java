@@ -7,7 +7,6 @@ import org.apache.lucene.util.BytesRef;
 
 import java.io.*;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * Created by RuzilyaS on 14-Mar-15.
@@ -15,16 +14,19 @@ import java.util.Properties;
 public class PostingsFile {
 
     private String postingsFileDir;
+    private File dir;
 
     public PostingsFile(String path){
         postingsFileDir=path;
+        dir = new File(postingsFileDir);
     }
 
-    public File create() throws IOException, ParseException {
-        File dir = new File(postingsFileDir);
+    public File create(boolean isShot, String postingFileName) throws IOException, ParseException {
         dir.mkdirs();
-        File postingFile = new File(postingsFileDir+File.separator+"postingsFile");
+        File postingFile = new File(postingsFileDir+File.separator+postingFileName);
+
         postingFile.createNewFile();
+
         BufferedWriter bw = new BufferedWriter(new FileWriter(postingFile));
 
         LuceneIndexManager lim = new LuceneIndexManager();
@@ -33,15 +35,25 @@ public class PostingsFile {
         TermsEnum iterator = terms.iterator(null);
         BytesRef byteRef = null;
         String term ="";
+        String numbers;
         while((byteRef = iterator.next()) != null) {
             term = new String(byteRef.bytes, byteRef.offset, byteRef.length);
-            bw.write(String.format("%s=%s", term, getString(lim.getDocIds(term))));
+
+            if(isShot){
+                numbers =  getShotString(lim.getDocIds(term));
+            }else{
+                numbers = getString(lim.getDocIds(term));
+            }
+
+            bw.write(String.format("%s=%s", term, numbers));
+
             bw.newLine();
         }
 
         bw.close();
 
         return postingFile;
+
     }
 
     public static String getString(List<Integer> numbers){
@@ -52,4 +64,25 @@ public class PostingsFile {
         return sb.toString();
     }
 
+    public static String getShotString(List<Integer> numbers){
+        StringBuffer sb = new StringBuffer();
+
+        //First number
+        if(numbers.size()>0){
+            sb.append(numbers.get(0)+" ");
+        }
+
+        for(int i=1; i<numbers.size(); i++){
+            sb.append(numbers.get(i) - numbers.get(i-1)+" ");
+        }
+        return sb.toString();
+    }
+
+    public File getDir() {
+        return dir;
+    }
+
+    public void setDir(File dir) {
+        this.dir = dir;
+    }
 }

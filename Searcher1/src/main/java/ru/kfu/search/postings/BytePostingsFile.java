@@ -24,19 +24,27 @@ public class BytePostingsFile {
 
     public File create(File postingFile) throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(postingFile));
+
         NumberConverter converter = new NumberConverter();
+
         File resultByteFile = new File(filename);
         BufferedWriter bw = new BufferedWriter(new FileWriter(resultByteFile));
+
         String str;
         while ((str=br.readLine())!=null) {
             String key = str.substring(0, str.indexOf("="));
             String numbersStr = str.substring(str.indexOf("=") + 1);
+
             List<Integer> numbers = converter.convertStringToInt(numbersStr);
+
             byte[] bytes = VariableByteCoder.vbEncode(numbers);
 
             LOG.debug("Original numbers:" + numbers);
+
             String encoded = new String(Base64.encode(bytes));
+
             LOG.debug("Encoded bytes as string: "+encoded);
+
             bw.write(key + "=" + encoded);
             bw.newLine();
         }
@@ -46,9 +54,11 @@ public class BytePostingsFile {
 
     public File getNumbersIntoFile(File bytePostingFile, String filePath) throws IOException {
         File file = new File(filePath);
+
         BufferedWriter bw = new BufferedWriter(new FileWriter(file));
 
         BufferedReader br = new BufferedReader(new FileReader(bytePostingFile));
+
         String str;
         while((str=br.readLine())!=null){
             String numbers = str.substring(str.indexOf("=")+1);
